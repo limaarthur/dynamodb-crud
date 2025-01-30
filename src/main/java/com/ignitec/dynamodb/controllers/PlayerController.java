@@ -71,4 +71,21 @@ public class PlayerController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{username}/games/{gameId}")
+    public ResponseEntity<Void> delete(@PathVariable("username") String username,
+                                       @PathVariable("gameId") String gameId) {
+        var entities = dynamoDbTemplate.load(Key.builder()
+                .partitionValue(username)
+                .sortValue(gameId)
+                .build(), PlayerHistoryEntity.class);
+
+        if (entities == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        dynamoDbTemplate.delete(entities);
+
+        return ResponseEntity.noContent().build();
+    }
 }
